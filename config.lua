@@ -36,7 +36,6 @@ JF.Jamming = {
         ["Anim"] = "nervous_idle"
     },
     ["Chance"] = {
-        [100] = 15,
         [80] = 15,
         [50] = 10,
         [40] = 15,
@@ -63,4 +62,5 @@ JF.Labels = {
         ["type"] = "success",
         ["icon"] = "fa-solid fa-person-rifle",
     },
+
 }
