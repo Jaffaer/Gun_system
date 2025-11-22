@@ -27,7 +27,6 @@ local function showFixNotification()
 end
 
 AddEventHandler('ox_inventory:currentWeapon', function(data)
-    -- Om vapnet byts/läggs undan, ta bort notisen
     if not data and fixNotification then
         lib.notify.dismiss(fixNotification)
         fixNotification = nil
@@ -36,7 +35,6 @@ AddEventHandler('ox_inventory:currentWeapon', function(data)
     
     currentWeapon = data
     
-    -- Om samma jammade vapen tas upp igen, visa notisen
     if currentWeapon and isJammed and not isDoingSkillcheck then
         showFixNotification()
     end
@@ -48,7 +46,6 @@ local function skillCheck()
     isDoingSkillcheck = true
     waitingForInput = false
     
-    -- Ta bort fix-notisen
     if fixNotification then
         lib.notify.dismiss(fixNotification)
         fixNotification = nil
@@ -87,7 +84,7 @@ local function jammedAnim()
     
     while isDoingSkillcheck do
         TaskPlayAnim(cache.ped, jamAnim["Dict"], jamAnim["Anim"], 1.0, 1.0, -1, 49, 0.0, false, false, false)
-        Wait(3000) -- Vänta 3 sekunder innan animationen loopas igen (justera efter behov)
+        Wait(3000)
     end
     
     ClearPedTasks(cache.ped)
@@ -99,15 +96,13 @@ local function waitForInput()
     
     CreateThread(function()
         while waitingForInput and isJammed do
-            if IsControlJustPressed(0, 38) then -- E-knappen (38 = E)
+            if IsControlJustPressed(0, 38) then
                 waitingForInput = false
                 
-                -- Starta skillcheck
                 Citizen.CreateThread(function()
                     skillCheck()
                 end)
                 
-                -- Starta animation
                 Citizen.CreateThread(function()
                     jammedAnim()
                 end)
@@ -127,12 +122,10 @@ AddStateBagChangeHandler('JammedState', nil, function(bagName, key, value)
     if isJammed and not oldJammed then
         JF.Notification(JF.Labels["has_jammed"])
         
-        -- Starta disable firing (vapnet går inte att skjuta med)
         Citizen.CreateThread(function()
             disableFiring()
         end)
         
-        -- Vänta på E-input
         Citizen.CreateThread(function()
             waitForInput()
         end)
@@ -151,4 +144,5 @@ AddEventHandler("CEventGunShotWhizzedBy", function(entities, eventEntity, args)
             end
         end
     end
+
 end)
